@@ -1,7 +1,7 @@
 name: Pull Request tests
 
-#on: [pull_request]
-on: [push, pull_request]
+on: [pull_request]
+#on: [push]
 
 jobs:
   build:
@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        py:
-          - py35
-          - py36
-          - py37
-          - py38
-          - py39
+        python:
+          - 3.5
+          - 3.6
+          - 3.7
+          - 3.8
+          - 3.9
         django:
           - django-22
           - django-30
@@ -23,28 +23,28 @@ jobs:
         # https://docs.djangoproject.com/en/3.2/faq/install/#what-python-version-can-i-use-with-django
         exclude:
           - django: django-22
-            py: py39
+            python: 3.9
           - django: django-30
-            py: py35
+            python: 3.5
           - django: django-31
-            py: py35
+            python: 3.5
           - django: django-31
-            py: py36
+            python: 3.6
           - django: django-32
-            py: py35
+            python: 3.5
           - django: django-32
-            py: py36
+            python: 3.6
 
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
         uses: actions/setup-python@v2
-#        with:
-#          python-version: 3.5.4
+        with:
+          python-version: ${{ matrix.python }}
       - name: Install Tox and any other packages
         run: pip install -r requirements_test.txt
       - name: Run Tox
-        run: tox -e ${{ matrix.py }}-${{ matrix.django }}
+        run: tox -e py-${{ matrix.django }}
 # Codecov is running separately?
 #      - name: Codecov
-#        run:  codecov -e ${{ matrix.py }}-${{ matrix.django }}
+#        run:  codecov -e ${{ matrix.python }}-${{ matrix.django }}
